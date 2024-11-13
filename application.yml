@@ -1,0 +1,75 @@
+debug: false
+
+logging:
+  config: file:logback.xml
+  level:
+    org: 
+      hibernate: 
+        SQL: TRACE
+        type.descriptor.sql.BasicBinder: TRACE
+
+queue:
+  config:
+    host: localhost
+    port: 5672
+    heartbeat: 10
+    username: user
+    password: passowrd
+    retry.interval: 10
+    prefetch.count: 5
+    auto.ack: false
+    ssl-enable: false
+    queue: 
+      request: WS-IN
+      response: WS-OUT
+      processor: WS-PROC
+    forwarders:
+      from: ISO-OUT,WS-H-OUT,1L-H-OUT
+      to: WS-OUT
+      prefetch.count: 3
+      auto.ack: true
+    request:
+      forwarders: 
+        from: WS-IN
+        to: ISO-IN,WS-H-IN,1L-H-IN
+
+# 10 minutes - 600 seconds
+cache:
+  name: requestCache
+  expiry: 600000
+
+spring:
+  mandatoryFileEncoding: UTF-8
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@localhost:1234/db1
+    username: oc
+    password: password
+    sqlScriptEncoding: UTF-8
+    tomcat.connection-properties: useUnicode=yes;characterEncoding=utf-8;
+    hikari:
+      connection-test-query: SELECT 1 FROM DUAL
+      minimum-idle: 8
+      maximum-pool-size: 24
+      pool-name: oracle-pool
+      auto-commit: true
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    open-in-view: false
+    database-platform: org.hibernate.dialect.Oracle12cDialect
+    hibernate: 
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.Oracle12cDialect
+        format_sql: true
+        #globally_quoted_identifiers: true
+        id.new_generator_mappings: false
